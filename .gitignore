@@ -1,3 +1,5 @@
 *.csv
 *.tsv
 *.ipynb
+/home/gabriel/Documents/Repos/medium_lambda_tutorial/lambda_layers/python/lib/python3.7/site-packages/*
+*.zip
