@@ -28,6 +28,8 @@ def lambda_handler(event, context):
     BUCKET = event.get('bucket')
     KEY = event.get('file_key')
     OUTPUT = event.get('output_file')
+    GROUP = event.get('group')
+    COLUMN = event.get('column')
 
     # Set client to get file from S3
     s3_client = boto3.client('s3')
@@ -36,14 +38,14 @@ def lambda_handler(event, context):
     csv_file = response["Body"]
 
     # Load csv as a Pandas Dataframe
-    df_fifa19 = pd.read_csv(csv_file, index_col=0, low_memory=False)
+    df = pd.read_csv(csv_file, index_col=0, low_memory=False)
 
-    # Group Clubs by Overall mean for player
-    df_avg_overall_by_club = pd.DataFrame(df_fifa19.groupby('Club')[
-        'Overall'].mean().sort_values(ascending=False)).round(2)
+    # Create groupby Dataframe
+    df_groupby = pd.DataFrame(df.groupby(GROUP)[
+        COLUMN].mean().sort_values(ascending=False)).round(2)
 
     # Save the Dataframe to the same S3 BUCKET
-    write_dataframe_to_csv_on_s3(df_avg_overall_by_club, OUTPUT, BUCKET)
+    write_dataframe_to_csv_on_s3(df_groupby, OUTPUT, BUCKET)
 
     return {
         'statusCode': 200,
